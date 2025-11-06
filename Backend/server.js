@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
+const cors = require('cors');
 const path = require("path");
 const cookieParser = require('cookie-parser');
 
@@ -12,14 +13,15 @@ const doctorUploadRoute = require('./routes/doctorUploadRoute');
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:5173', // frontend url
+  credentials: true // This allows cookies/sessions to be sent
+}));
+
 
 const PORT = process.env.PORT || 5000;
 
 connectToMongoDB(process.env.MONGO_URI);
-
-// View Engine
-app.set("view engine", "ejs");
-app.set("views", path.resolve("./views"));
 
 // Middleware
 app.use(express.json());  // Express built-in middleware to parse JSON
@@ -36,12 +38,12 @@ app.use("/doctor", doctorUploadRoute);
 
 // Main page route
 app.get('/', (req, res) => {
-  res.render("home");
+  res.json({ message: "Welcome to MediVault API" });
 });
 
 // Handle 404, if no route matches above
 app.use((req, res) => {
-  res.status(404).render("404", { title: "Page Not Found" });
+  res.status(404).json({ message: "Page Not Found" });
 });
 
 
