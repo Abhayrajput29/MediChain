@@ -14,7 +14,7 @@ const doctorUploadRoute = require('./routes/doctorUploadRoute');
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', // frontend url
+  origin: process.env.Frontend_URL || 'http://localhost:5173', // frontend url
   credentials: true // This allows cookies/sessions to be sent
 }));
 
