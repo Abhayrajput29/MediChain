@@ -1,115 +1,149 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ShieldCheck } from "lucide-react";
+import { Menu, X, ShieldCheck, Sun, Moon } from "lucide-react";
+import { Classic } from "@theme-toggles/react";
+import "@theme-toggles/react/css/Classic.css";
 
 export default function Navbar({ locoScrollRef }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme === "dark";
+  });
+
+  const navLinks = [
+    { name: "Features", target: "#features" },
+    { name: "How it Works", target: "#how-it-works" },
+    { name: "Security", target: "#security" },
+  ];
 
   const handleScrollTo = (target) => {
-    setIsOpen(false); // Close mobile menu on click
-
-    // If the scroll instance isn't ready yet (or the ref is null),
-    // just return and do nothing. This prevents the crash.
-    if (!locoScrollRef.current) {
-      console.warn("Locomotive Scroll not yet initialized.");
-      return;
+    setIsOpen(false);
+    if (locoScrollRef.current) {
+      locoScrollRef.current.scrollTo(target);
     }
-
-    locoScrollRef.current.scrollTo(target);
   };
+
+  useEffect(() => {
+    if (isDark) {
+      document.body.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.setAttribute("data-theme", "light");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
+  function handleTheme() {
+    setIsDark((prev) => !prev);
+  }
 
   return (
     <nav
       data-scroll-sticky
       data-scroll-target="#main-scroll-container"
-      className="bg-white/70 backdrop-blur-lg shadow-sm top-0 left-0 right-0 relative z-50"
+      className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-navbar-bg/80 backdrop-blur-md transition-colors duration-300"
     >
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-xl font-bold text-blue-600"
-          onClick={() => handleScrollTo("#")}
-        >
-          <ShieldCheck className="w-6 h-6" />
-          <span>MediChain</span>
-        </Link>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
-          <a
-            onClick={() => handleScrollTo("#features")}
-            className="text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
-          >
-            Features
-          </a>
-          <a
-            onClick={() => handleScrollTo("#how-it-works")}
-            className="text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
-          >
-            How it Works
-          </a>
-          <a
-            onClick={() => handleScrollTo("#security")}
-            className="text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
-          >
-            Security
-          </a>
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          {/* LOGO */}
           <Link
-            to="/login"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            to="/"
+            className="flex items-center gap-2 text-xl font-bold text-blue-600 dark:text-white hover:opacity-80 transition-opacity"
+            onClick={() => handleScrollTo("#")}
           >
-            login
+            <ShieldCheck className="w-7 h-7" />
+            <span className="tracking-tight">MediChain</span>
           </Link>
-          <Link
-            to="/signup"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            SignUp
-          </Link>
-        </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/*  DESKTOP NAVIGATION */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                onClick={() => handleScrollTo(link.target)}
+                className="text-sm font-medium text-gray-600 cursor-pointer transition-colors hover:text-blue-600 dark:text-text-for-dark dark:hover:text-greenish"
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+
+          {/*  RIGHT ACTIONs */}
+          <div className="hidden md:flex items-center gap-4">
+            <Classic
+              duration={750}
+              toggled={isDark}
+              onClick={handleTheme}
+              className="text-gray-600 dark:text-yellow-400 transition-all text-4xl flex items-center justify-center"
+              aria-label="Toggle Theme"
+            />
+
+            <div className="h-6 w-px bg-gray-300 dark:bg-gray-700"></div>
+
+            <Link
+              to="/login"
+              className="text-sm font-semibold text-gray-600 hover:text-blue-600 dark:text-text-for-dark dark:hover:text-white transition-colors"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/signup"
+              className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-full shadow-md hover:bg-blue-700 hover:shadow-lg transition-all transform hover:-translate-y-0.5 dark:bg-greenish dark:hover:bg-[#7fe5d8] dark:text-navbar-bg"
+            >
+              Sign Up
+            </Link>
+          </div>
+
+          {/* 4. MOBILE TOGGLE */}
+          <div className="flex items-center gap-4 md:hidden">
+            <Classic
+              duration={750}
+              toggled={isDark}
+              onClick={handleTheme}
+              className="text-gray-600 dark:text-yellow-400 text-3xl flex items-center justify-center"
+            />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-gray-600 dark:text-white"
+            >
+              {isOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* 5. MOBILE MENU dropdown */}
       {isOpen && (
-        <div className="md:hidden bg-white shadow-lg absolute top-full left-0 right-0 py-4">
-          <a
-            onClick={() => handleScrollTo("#features")}
-            className="block px-6 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            Features
-          </a>
-          <a
-            onClick={() => handleScrollTo("#how-it-works")}
-            className="block px-6 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            How it Works
-          </a>
-          <a
-            onClick={() => handleScrollTo("#security")}
-            className="block px-6 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            Security
-          </a>
-          <Link
-            to="/login"
-            className="block w-full text-left px-6 py-3 mt-2 bg-blue-50 text-blue-600 font-semibold"
-          >
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="block w-full text-left px-6 py-3 mt-2 bg-blue-50 text-blue-600 font-semibold"
-          >
-            SignUp
-          </Link>
+        <div className="md:hidden absolute top-full left-0 right-0 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-navbar-bg shadow-xl">
+          <div className="flex flex-col p-4 space-y-4">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                onClick={() => handleScrollTo(link.target)}
+                className="text-gray-600 font-medium hover:text-blue-600 dark:text-text-for-dark dark:hover:text-greenish"
+              >
+                {link.name}
+              </a>
+            ))}
+            <hr className="border-gray-100 dark:border-gray-700" />
+            <Link
+              to="/login"
+              className="text-center py-2 text-gray-600 font-semibold dark:text-text-for-dark"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/signup"
+              className="text-center py-2 bg-blue-600 text-white rounded-lg font-semibold dark:bg-greenish dark:text-navbar-bg"
+            >
+              Sign Up
+            </Link>
+          </div>
         </div>
       )}
     </nav>
