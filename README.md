@@ -76,7 +76,8 @@ Follow these steps to run the project locally:
 ### 🔹 Backend Setup
 ```bash
 git clone https://github.com/theadarsh1m/MediChain.git
-cd MediChain
+(open that Medichain folder for simplicity)
+cd Backend
 ```
 
 ### 2.Install dependencies
@@ -94,13 +95,41 @@ MONGODB_URI=your_mongodb_atlas_connection_string
 
 JWT_SECRET=YourSuperSecretKey
 JWT_EXPIRES_IN=7d
+
+Frontend_URL=http://localhost:5173 # local frontend
+ 
+# File Upload setup
+CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY=YOUR_CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
 ```
-- ⚠️ Replace your_mongodb_atlas_connection_string and JWT_SECRET(for dev) with your own.
+- ⚠️ Replace your_mongodb_atlas_connection_string, JWT_SECRET(for dev), CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET(for file uploads) with your own.
 
 ### 4. Start the server
 ```bash
 npm start
 ```
+
+### 5. Open New Terminal
+```bash
+cd Frontend
+```
+
+### 6. Install dependencies
+```bash
+npm install
+```
+
+### 7. Configure environment variables
+```
+VITE_Backend_API_URL=http://localhost:5000 # local backend
+```
+### 8. Start the server
+```bash
+npm run dev
+```
+
+
 ## 📊 Screenshots
 
 
